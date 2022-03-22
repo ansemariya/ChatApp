@@ -1,0 +1,53 @@
+<div class="container">
+    <ng-container *ngIf="!chatroom else chatMessages">
+      <div class="select-chatroom" fxLayoutAlign="space-around center">
+        <span class="select-message">Select a chat</span></div>
+    </ng-container>
+</div>
+
+<ng-template #chatMessages>
+  <mat-toolbar class="topbar">
+    <span>{{chatroom}}</span>
+    <span class="example-spacer"></span>
+    <button mat-raised-button color="warn" (click)="blockToggle()">{{block ? 'UnBlock' : 'Block'}}
+      <mat-icon>{{block ? 'remove_circle' : 'block'}}</mat-icon>
+    </button><span class="space"></span>
+    <button mat-raised-button (click)="muteToggle()">{{mute ? 'UnMute' : 'Mute'}}
+      <mat-icon>{{mute ? 'volume_up' : 'volume_off'}}</mat-icon>
+    </button>
+  </mat-toolbar>
+  <div class="chatarea">
+      <div style="min-height: 0;" id="scrolldiv">
+        <div *ngFor="let chat of chats; let i = index" class="chat"  [class.notify]="chat.type == 'notify'"
+              [class.me]="chat.sender == username ">
+          <div class="p">
+            <img src="http://localhost:2000/uploads/{{chat.image}}" style="width: 400px;" *ngIf="chat.image">
+            <br>
+            <!-- <span *ngIf="username!=chat.sender" class="username">{{chat.sender}}</span> -->
+            <span>{{chat.messages}}</span>
+            <button mat-icon-button [cdkCopyToClipboard]="chat.messages" style="color: rgb(110, 108, 108);" title="Copy message">
+              <mat-icon>content_copy</mat-icon>
+            </button>
+            <br>
+            <span style="font-size: xx-small;color:black;" class="ml-auto d-flex">{{chat.createAt| date: format}}</span>
+          </div>
+
+        </div>
+      </div>
+  </div>
+  <div class="inputarea">
+    <ng-container *ngIf='!block else alert'>
+      <form (submit)="addChat()">
+        <input class="textbox" name="message" [(ngModel)]="message" type="text">
+        <input type="file" name="image" id="input-image" (change)="selectImage($event)">
+        <button type="submit" class="sendbutton">Send</button>
+      </form>
+    </ng-container>
+
+    <ng-template #alert>
+      <div  class="alert-warning">
+        <strong>UNBLOCK user to restart messaging</strong>
+      </div>
+    </ng-template>
+  </div>
+</ng-template>
